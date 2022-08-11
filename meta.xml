@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module>
+  <id>smtp2go</id>
+  <name>SMTP2GO</name>
+  <description>A Plesk extension that connects servers running Plesk with SMTP2GO.</description>
+  <category>mail</category>
+  <version>1</version>
+  <release>1</release>
+  <vendor>Thomas K.</vendor>
+  <buy_url>https://www.smtp2go.com/</buy_url>
+  <url>https://www.smtp2go.com/</url>
+  <help_url>https://www.smtp2go.com/contact/</help_url>
+  <plesk_min_version>18.0.38</plesk_min_version>
+</module>

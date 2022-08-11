@@ -1,0 +1,1 @@
+A Plesk extension that connects servers running Plesk with SMTP2GO

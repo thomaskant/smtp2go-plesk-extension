@@ -1,0 +1,60 @@
+#login .zend_form dd{
+    margin-left:0;
+}
+
+#login .zend_form dd label 
+{
+    float:left;
+    display:block;
+    width:150px;
+}
+
+#login .zend_form dt 
+{
+    clear:both;
+    margin-top: 10px;
+}
+
+.btn input[type=submit] {
+    border: 0;
+    margin: -1px;
+    padding: 7px 9px;
+    background: none;
+    min-width: 92px;
+    vertical-align: top;
+    line-height: 16px;
+}
+
+#logs textarea
+{
+    width:100%;
+}
+
+#logs .short_msg 
+{
+
+}
+
+#postfix .field-name {
+    width: 300px;
+}
+
+#postfix input[type=text],#postfix select {
+    width:220px;
+}
+
+#logs .field-name 
+{
+    display:block;
+    float:none;
+}
+
+#logs .field-value
+{
+    margin:0!important;
+}
+
+.logotitle {
+    margin-right: 10px;
+    margin-bottom: 5px;
+}

@@ -1,0 +1,91 @@
+#!/bin/bash  
+args=("$@") 
+for ARG in $*
+do
+    arg=`echo $ARG | tr -d  '-'`
+    case $arg in
+        firststep)
+                cp /etc/postfix/main.cf /etc/postfix/main.cf.backup;
+                data=`cat /etc/postfix/main.cf`;
+                
+                if [[ $data != *SMTP2GOCONFIG* ]]
+                then
+                    r1=`sed '/relayhost/d' /etc/postfix/main.cf`
+                    echo "${r1}" > /etc/postfix/main.cf
+                    r2=`sed '/smtp_sasl_auth_enable/d' /etc/postfix/main.cf`
+                    echo "${r2}" > /etc/postfix/main.cf
+                    r3=`sed '/smtp_sasl_password_maps/d' /etc/postfix/main.cf`
+                    echo "${r3}" > /etc/postfix/main.cf
+                    r4=`sed '/smtp_sasl_security_options/d' /etc/postfix/main.cf`
+                    echo "${r4}" > /etc/postfix/main.cf
+                    r5=`sed '/smtpd_sasl_authenticated_header/d' /etc/postfix/main.cf`
+                    echo "${r5}" > /etc/postfix/main.cf
+                    r6=`sed '/smtp_tls_security_level/d' /etc/postfix/main.cf`
+                    echo "${r6}" > /etc/postfix/main.cf
+                echo "
+#SMTP2GOCONFIG
+relayhost = [mail.smtp2go.com]:2525
+smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = hash:/etc/postfix/password
+smtp_sasl_security_options = noanonymous
+smtpd_sasl_authenticated_header = yes
+smtp_tls_security_level = may
+header_size_limit = 4096000
+#ENDSMTP2GOCONFIG
+" >> /etc/postfix/main.cf;
+
+
+                fi;
+
+                if [ -f /etc/debian_version ]; then
+                   timeout 20 apt-get -y install libsasl2-modules
+                elif [ -f /etc/redhat-release ]; then
+                   timeout 10 yum -y install cyrus-sasl-plain
+                fi
+                rm /etc/postfix/password
+                rm /etc/postfix/password.db
+            ;;
+        checkpostfix)
+                if [ ! -f /etc/postfix/main.cf ]; then
+                    echo 0;
+                else
+                    echo 1;
+                fi
+            ;;
+        testCon)
+                echo "Message was sent using SMTP2GO"  > /tmp/test
+                mail -s 'Config Test' $2 < /tmp/test
+                rm /tmp/test 
+            ;;
+        getLog)
+                timeout 2 tail -f /var/log/maillog
+            ;;
+        setConf)
+                touch /etc/postfix/password
+                echo "mail.smtp2go.com    $2:$3" | sed 's/^ *//' > /etc/postfix/password;
+                chown root:root /etc/postfix/password
+                chmod 0600 /etc/postfix/password
+                postmap hash:/etc/postfix/password
+                echo "1";
+            ;;
+        uninstall)
+                data=`cat /etc/postfix/main.cf`;
+                if [[ $data == *APTRANETSMTPRELAYCONFIG* ]]
+                then
+                    data=`sed '/#SMTP2GOCONFIG/,/#ENDSMTP2GOCONFIG/d' /etc/postfix/main.cf`;
+                    echo "${data}" > /etc/postfix/main.cf
+                fi;
+                /etc/init.d/postfix restart > /dev/null
+                echo "1";
+            ;;
+        readFile)
+                cat /etc/postfix/main.cf;
+            ;;
+        saveFile)
+                echo $2 | base64 --decode >> /etc/postfix/main.cf;
+                /etc/init.d/postfix restart > /dev/null
+                echo "1";
+            ;; 
+    esac
+    argLine="$argLine --$ARG ";
+done      
